@@ -48,6 +48,7 @@ time.sleep(2.0)
 while True:
     # grab the current frame
     frame = vs.read()
+    #frame = cv2.flip(frame,1)
 
     # handle the frame from VideoCapture or VideoStream
     frame = frame[1] if args.get("video", False) else frame
@@ -59,7 +60,7 @@ while True:
 
     # resize the frame, blur it, and convert it to the HSV
     # color space
-    frame = imutils.resize(frame, width=600)
+    #frame = imutils.resize(frame, width=600)
     blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 
@@ -72,14 +73,13 @@ while True:
 
 
 
-    cv2.imshow("Frame2", mask)
     # find contours in the mask and initialize the current
     # find contours in the mask and initialize the current
     # (x, y) center of the ball
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     center = None
-    frame[:] = (0,0,0)
+    #frame[:] = (0,0,0)
 
     try:
         # only proceed if at least one contour was found
@@ -94,12 +94,16 @@ while True:
 
             # only proceed if the radius meets a minimum size
             if radius > 10:
+
                 # draw the circle and centroid on the frame,
                 # then update the list of tracked points
                 cv2.circle(frame, (int(x), int(y)), int(radius),
-                           (0, 255, 255), -1)
+                           (255, 0, 0), -1)
 
+                cv2.arrowedLine(frame,center,(30,30),(0,0,255),2 )
+                cv2.rectangle(frame,(5,5),(90,90) ,(0,144,240),2)
                 pts.appendleft(center)
+                time.sleep(0.100)
 
 
 
@@ -122,13 +126,7 @@ while True:
 
                 # ensure there is significant movement in the
                 # x-direction
-                if np.abs(dX) > 20:
-                    dirX = "East" if np.sign(dX) == 1 else "West"
 
-                # ensure there is significant movement in the
-                # y-direction
-                if np.abs(dY) > 20:
-                    dirY = "North" if np.sign(dY) == 1 else "South"
 
                 # handle when both directions are non-empty
                 if dirX != "" and dirY != "":
@@ -153,8 +151,11 @@ while True:
                 0.35, (0, 0, 255), 1)
 
     # show the frame to our screen and increment the frame counter
-    cv2.imshow("Frame", frame)
+    #cv2.imshow("Frame", frame)
 
+    cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.imshow("window", frame)
     key = cv2.waitKey(1) & 0xFF
     counter += 1
 
